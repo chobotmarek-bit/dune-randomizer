@@ -1,1 +1,2 @@
 # dune-randomizer
+img/
