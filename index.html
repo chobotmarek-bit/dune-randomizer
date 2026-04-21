@@ -3,19 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DUNE: Imperium Randomizer</title>
+<title>DUNE Randomizer</title>
 
 <style>
 body {
-    background: #1e1e1e;
-    color: white;
+    background: #f4d03f; /* piesková púšť */
+    color: #000000; /* čierny text */
     font-family: Arial, sans-serif;
     padding: 20px;
+}
+
+h2 {
+    color: #000;
 }
 
 input, button {
     padding: 10px;
     margin-top: 10px;
+    font-size: 16px;
 }
 
 button {
@@ -24,6 +29,9 @@ button {
 
 .player {
     margin-top: 25px;
+    padding: 10px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 8px;
 }
 
 .char {
@@ -33,8 +41,8 @@ button {
 }
 
 .char img {
-    width: 160px;
-    height: 160px;
+    width: 140px;
+    height: 140px;
     object-fit: contain;
     display: block;
 }
@@ -48,81 +56,74 @@ button {
 
 <body>
 
-<h2>DUNE: Imperium Randomizer</h2>
+<h2>🌵 DUNE: Imperium Randomizer</h2>
 
-<label>Počet hráčov (2–4):</label><br>
+<p id="debug">Status: načítavam stránku...</p>
+
 <input type="number" id="numPlayers" min="2" max="4" value="2">
-<button onclick="assignCharacters()">Prideliť postavy</button>
+<button onclick="assign()">Prideliť postavy</button>
 
 <div id="results"></div>
 
 <script>
 
+document.getElementById("debug").innerText = "JS funguje ✔️";
+
 const characters = [
-    "Muad'Dib", "Liet Kynes", "Duncan Idaho",
-    "Feyd-Rautha", "Gurney Halleck", "Lady Margot", "Lady Amber Metulli",
-    "Staban Tuek", "Steersman Y’rkoon", "Piter De Vries", "Esmar Tuek",
-    "Gaius Helen Mohiam", "Kota Odax", "Princess Irulan", "Emperor Shaddam Corrino IV"
+"Muad'Dib", "Liet Kynes", "Duncan Idaho",
+"Feyd-Rautha", "Gurney Halleck", "Lady Margot", "Lady Amber Metulli",
+"Staban Tuek", "Steersman Y’rkoon", "Piter De Vries", "Esmar Tuek",
+"Gaius Helen Mohiam", "Kota Odax", "Princess Irulan", "Emperor Shaddam Corrino IV"
 ];
 
-// 👉 TU nastav cestu k obrázkom
-// napr:
-// "c:\Users\chobo\Projekt AI Duna\iphone\" (ak máš priečinok vedľa HTML)
-// alebo URL: https://mojserver.com/img/
 const IMAGE_PATH = "img/";
 
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-}
-
-function assignCharacters() {
+function assign() {
     const num = parseInt(document.getElementById("numPlayers").value);
 
     if (isNaN(num) || num < 2 || num > 4) {
-        alert("Zadaj počet hráčov 2–4");
+        alert("Zadaj 2–4 hráčov");
         return;
     }
 
-    const shuffled = shuffle([...characters]);
-    const results = document.getElementById("results");
+    let shuffled = [...characters].sort(() => Math.random() - 0.5);
+    let results = document.getElementById("results");
     results.innerHTML = "";
 
     for (let i = 0; i < num; i++) {
-        const playerDiv = document.createElement("div");
-        playerDiv.className = "player";
+        let div = document.createElement("div");
+        div.className = "player";
 
-        const title = document.createElement("h3");
-        title.textContent = "Player " + (i + 1);
-        playerDiv.appendChild(title);
+        let title = document.createElement("h3");
+        title.textContent = "Player " + (i+1);
+        div.appendChild(title);
 
         for (let j = 0; j < 2; j++) {
-            const index = i * 2 + j;
-            const charName = shuffled[index];
+            let char = shuffled[i*2+j];
 
-            const charDiv = document.createElement("div");
-            charDiv.className = "char";
+            let cdiv = document.createElement("div");
+            cdiv.className = "char";
 
-            const img = document.createElement("img");
-            img.src = IMAGE_PATH + charName + ".png";
+            let img = document.createElement("img");
+            img.src = IMAGE_PATH + encodeURIComponent(char) + ".png";
 
-            // fallback keď obrázok neexistuje
-            img.onerror = function () {
+            img.onerror = function() {
                 this.style.display = "none";
-                const missing = document.createElement("div");
-                missing.textContent = charName + " (chýba obrázok)";
-                missing.className = "missing";
-                charDiv.appendChild(missing);
+                let miss = document.createElement("div");
+                miss.className = "missing";
+                miss.textContent = char + " (chýba obrázok)";
+                cdiv.appendChild(miss);
             };
 
-            const label = document.createElement("div");
-            label.textContent = charName;
+            let name = document.createElement("div");
+            name.textContent = char;
 
-            charDiv.appendChild(img);
-            charDiv.appendChild(label);
-            playerDiv.appendChild(charDiv);
+            cdiv.appendChild(img);
+            cdiv.appendChild(name);
+            div.appendChild(cdiv);
         }
 
-        results.appendChild(playerDiv);
+        results.appendChild(div);
     }
 }
 
