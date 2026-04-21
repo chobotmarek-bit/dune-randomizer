@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DUNE Randomizer</title>
+
+<style>
+body {
+    background: #f4d03f; /* púštna žltá */
+    color: #000;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+input, button {
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.player {
+    margin-top: 25px;
+    padding: 10px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+}
+
+.char {
+    display: inline-block;
+    margin-right: 20px;
+    text-align: center;
+}
+
+.char img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    display: block;
+}
+
+.missing {
+    color: red;
+    font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🌵 DUNE: Imperium Randomizer</h2>
+
+<p id="debug">Načítavam...</p>
+
+<input type="number" id="numPlayers" min="2" max="4" value="2">
+<button onclick="assign()">Prideliť postavy</button>
+
+<div id="results"></div>
+
+<script>
+
+// DEBUG
+document.getElementById("debug").innerText = "JS funguje ✔️";
+
+const characters = [
+"Muad'Dib",
+"Liet Kynes",
+"Duncan Idaho",
+"Feyd-Rautha",
+"Gurney Halleck",
+"Lady Margot",
+"Lady Amber Metulli",
+"Staban Tuek",
+"Steersman Y’rkoon",
+"Piter De Vries",
+"Esmar Tuek",
+"Gaius Helen Mohiam",
+"Kota Odax",
+"Princess Irulan",
+"Emperor Shaddam Corrino IV"
+];
+
+// PRESNÉ MAPOVANIE OBRÁZKOV
+const images = {
+  "Muad'Dib": "MuadDib.png",
+  "Liet Kynes": "LietKynes.png",
+  "Duncan Idaho": "DuncanIdaho.png",
+  "Feyd-Rautha": "FeydRautha.png",
+  "Gurney Halleck": "GurneyHalleck.png",
+  "Lady Margot": "LadyMargot.png",
+  "Lady Amber Metulli": "LadyAmberMetulli.png",
+  "Staban Tuek": "StabanTuek.png",
+  "Steersman Y’rkoon": "SteersmanYrkoon.png",
+  "Piter De Vries": "PiterDeVries.png",
+  "Esmar Tuek": "EsmarTuek.png",
+  "Gaius Helen Mohiam": "GaiusHelenMohiam.png",
+  "Kota Odax": "KotaOdax.png",
+  "Princess Irulan": "PrincessIrulan.png",
+  "Emperor Shaddam Corrino IV": "EmperorShaddamCorrinoIV.png"
+};
+
+const IMAGE_PATH = "img/";
+
+function assign() {
+    const num = parseInt(document.getElementById("numPlayers").value);
+
+    if (isNaN(num) || num < 2 || num > 4) {
+        alert("Zadaj 2–4 hráčov");
+        return;
+    }
+
+    let shuffled = [...characters].sort(() => Math.random() - 0.5);
+    let results = document.getElementById("results");
+    results.innerHTML = "";
+
+    for (let i = 0; i < num; i++) {
+        let div = document.createElement("div");
+        div.className = "player";
+
+        let title = document.createElement("h3");
+        title.textContent = "Player " + (i + 1);
+        div.appendChild(title);
+
+        for (let j = 0; j < 2; j++) {
+            let char = shuffled[i * 2 + j];
+
+            let cdiv = document.createElement("div");
+            cdiv.className = "char";
+
+            let img = document.createElement("img");
+
+            img.src = IMAGE_PATH + images[char];
+
+            img.onerror = function () {
+                this.style.display = "none";
+                let miss = document.createElement("div");
+                miss.className = "missing";
+                miss.textContent = char + " (chýba obrázok)";
+                cdiv.appendChild(miss);
+            };
+
+            let name = document.createElement("div");
+            name.textContent = char;
+
+            cdiv.appendChild(img);
+            cdiv.appendChild(name);
+            div.appendChild(cdiv);
+        }
+
+        results.appendChild(div);
+    }
+}
+</script>
+
+</body>
+</html>
